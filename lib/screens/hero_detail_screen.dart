@@ -34,19 +34,23 @@ class _HeroDetailScreenState extends State<HeroDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.hero.localizedName),
-      ),
+      appBar: AppBar(title: Text(widget.hero.localizedName)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Image.network(
-                'https://api.opendota.com${widget.hero.img}',
-                height: 200,
-              ),
+              // dans HeroDetailScreen (Image.network)
+              child: widget.hero.img.isNotEmpty
+                  ? Image.network(
+                      'https://api.opendota.com${widget.hero.img}',
+                      height: 200,
+                    )
+                  : Container(
+                      height: 200,
+                      child: Icon(Icons.image_not_supported, size: 64),
+                    ),
             ),
             SizedBox(height: 20),
             Text('Attribut principal: ${widget.hero.primaryAttr}'),
@@ -54,10 +58,16 @@ class _HeroDetailScreenState extends State<HeroDetailScreen> {
             Text('Rôles: ${widget.hero.roles.join(', ')}'),
             SizedBox(height: 20),
             if (_heroStats != null) ...[
-              Text('Statistiques:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('Winrate: ${(_heroStats!['win_rate'] * 100).toStringAsFixed(2)}%'),
-              Text('Popularité: ${_heroStats!['pick_rate'].toStringAsFixed(2)}%'),
+              Text(
+                'Statistiques:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Winrate: ${(_heroStats!['win_rate'] * 100).toStringAsFixed(2)}%',
+              ),
+              Text(
+                'Popularité: ${_heroStats!['pick_rate'].toStringAsFixed(2)}%',
+              ),
             ] else
               CircularProgressIndicator(),
           ],

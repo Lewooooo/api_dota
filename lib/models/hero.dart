@@ -20,15 +20,28 @@ class Hero {
   });
 
   factory Hero.fromJson(Map<String, dynamic> json) {
+    // utilitaire pour récupérer une chaîne sûre
+    String _safeString(dynamic v) => v == null ? '' : v.toString();
+
+    // récupérer roles en List<String> sûre
+    List<String> _safeRoles(dynamic r) {
+      if (r == null) return <String>[];
+      try {
+        return List<String>.from((r as List).map((e) => e.toString()));
+      } catch (_) {
+        return <String>[];
+      }
+    }
+
     return Hero(
-      id: json['id'],
-      name: json['name'],
-      localizedName: json['localized_name'],
-      primaryAttr: json['primary_attr'],
-      attackType: json['attack_type'],
-      roles: List<String>.from(json['roles']),
-      img: json['img'],
-      icon: json['icon'],
+      id: (json['id'] is int) ? json['id'] as int : int.tryParse('${json['id']}') ?? 0,
+      name: _safeString(json['name']),
+      localizedName: _safeString(json['localized_name']),
+      primaryAttr: _safeString(json['primary_attr']),
+      attackType: _safeString(json['attack_type']),
+      roles: _safeRoles(json['roles']),
+      img: _safeString(json['img']),
+      icon: _safeString(json['icon']),
     );
   }
 }

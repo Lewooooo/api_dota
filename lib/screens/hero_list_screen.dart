@@ -1,5 +1,3 @@
-
-
 import 'package:api_dota/providers/hero_provider.dart';
 import 'package:api_dota/screens/hero_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +9,7 @@ class HeroListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Dota 2 Heroes'),
-      ),
+      appBar: AppBar(title: Text('Dota 2 Heroes')),
       body: Consumer<HeroProvider>(
         builder: (context, heroProvider, child) {
           if (heroProvider.isLoading) {
@@ -25,11 +21,17 @@ class HeroListScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final hero = heroProvider.heroes[index];
               return ListTile(
-                leading: Image.network(
-                  'https://api.opendota.com${hero.icon}',
-                  width: 40,
-                  height: 40,
-                ),
+                leading: hero.icon.isNotEmpty
+                    ? Image.network(
+                        'https://api.opendota.com${hero.icon}',
+                        width: 40,
+                        height: 40,
+                      )
+                    : SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Icon(Icons.person),
+                      ),
                 title: Text(hero.localizedName),
                 subtitle: Text(hero.primaryAttr),
                 onTap: () {

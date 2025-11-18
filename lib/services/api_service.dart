@@ -10,6 +10,7 @@ class ApiService {
     
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
+      print(data);
       return data.map((json) => Hero.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load heroes');
