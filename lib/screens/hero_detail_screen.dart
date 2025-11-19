@@ -1,10 +1,10 @@
-import 'package:api_dota/models/hero.dart';
-import 'package:api_dota/services/api_service.dart';
-import 'package:flutter/material.dart' hide Hero;
+import 'package:flutter/material.dart';
+import '../models/dota_hero.dart';
+import '../models/matchup.dart';
+import '../services/api_service.dart';
 
 class HeroDetailScreen extends StatefulWidget {
-  final Hero hero;
-
+  final DotaHero hero;
   const HeroDetailScreen({Key? key, required this.hero}) : super(key: key);
 
   @override
@@ -12,66 +12,247 @@ class HeroDetailScreen extends StatefulWidget {
 }
 
 class _HeroDetailScreenState extends State<HeroDetailScreen> {
-  Map<String, dynamic>? _heroStats;
+  List<Matchup>? _matchups;
+  Map<int, DotaHero>? _heroMap;
+  bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _loadHeroStats();
+    _loadMatchups();
   }
 
-  Future<void> _loadHeroStats() async {
+  Future<void> _loadMatchups() async {
     try {
-      final stats = await ApiService.getHeroStats(widget.hero.id);
+      final matchups = await ApiService.getHeroMatchups(widget.hero.id);
+      final heroes = await ApiService.fetchHeroes();
+
+      final map = {for (var h in heroes) h.id: h};
+
+      matchups.sort((a, b) => b.gamesPlayed.compareTo(a.gamesPlayed));
+
       setState(() {
-        _heroStats = stats;
+        _matchups = matchups;
+        _heroMap = map;
+        _loading = false;
       });
-    } catch (error) {
-      print('Error loading hero stats: $error');
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
     }
   }
 
+  // --- UI HELPERS ---------------------------------------------------------
+
+  Widget _statRow(String name, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(name, style: TextStyle(color: Colors.grey[300])),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Widget _roleTag(String role) {
+    return Container(
+      margin: const EdgeInsets.only(right: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.tealAccent.withOpacity(0.85),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        role.toUpperCase(),
+        style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  // --- MATCHUPS UI --------------------------------------------------------
+
+  Widget _buildMatchupsList() {
+    if (_loading) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator(color: Colors.tealAccent)),
+      );
+    }
+
+    if (_error != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text("Erreur : $_error", style: const TextStyle(color: Colors.redAccent)),
+      );
+    }
+
+    if (_matchups == null || _matchups!.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Text("Aucun matchup trouvé.", style: TextStyle(color: Colors.white70)),
+      );
+    }
+
+    final items = _matchups!.take(15).toList();
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      separatorBuilder: (_, __) =>
+          Divider(color: Colors.white.withOpacity(0.08), height: 20),
+      itemBuilder: (context, index) {
+        final m = items[index];
+        final opponent = _heroMap![m.heroId];
+
+        if (opponent == null) {
+          return Text("Héros inconnu ${m.heroId}",
+              style: const TextStyle(color: Colors.white70));
+        }
+
+        return Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.network(
+                opponent.fullIconUrl, // ⭐ UTILISATION DIRECTE DES URL OpenDota
+                width: 44,
+                height: 44,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(opponent.localizedName,
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text("${m.gamesPlayed} parties",
+                      style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                ],
+              ),
+            ),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text("${m.winrate.toStringAsFixed(1)}%",
+                    style: const TextStyle(
+                        color: Colors.tealAccent, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                const Text("winrate",
+                    style: TextStyle(color: Colors.white70, fontSize: 12)),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // --- BUILD --------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
+    final hero = widget.hero;
+
     return Scaffold(
-      appBar: AppBar(title: Text(widget.hero.localizedName)),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              // dans HeroDetailScreen (Image.network)
-              child: widget.hero.img.isNotEmpty
-                  ? Image.network(
-                      'https://api.opendota.com${widget.hero.img}',
-                      height: 200,
-                    )
-                  : Container(
-                      height: 200,
-                      child: Icon(Icons.image_not_supported, size: 64),
-                    ),
+      backgroundColor: const Color(0xff1B1F23),
+      appBar: AppBar(
+        backgroundColor: const Color(0xff111417),
+        title: Text(hero.localizedName),
+      ),
+      body: Stack(
+        children: [
+          // ⭐ Background image
+          Positioned.fill(
+            child: Image.network(hero.fullImgUrl, fit: BoxFit.cover),
+          ),
+
+          // ⭐ Semi-clear filter
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.22)),
+          ),
+
+          // ⭐ Main content
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  children: hero.roles.map((r) => _roleTag(r)).toList(),
+                ),
+                const SizedBox(height: 16),
+
+                // STATS
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.50),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Statistiques',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      _statRow('HP', '${hero.baseHealth} (+${hero.baseHealthRegen}/s)'),
+                      _statRow('Mana', '${hero.baseMana} (+${hero.baseManaRegen}/s)'),
+                      _statRow('Force', '${hero.baseStr} (+${hero.strGain})'),
+                      _statRow('Agilité', '${hero.baseAgi} (+${hero.agiGain})'),
+                      _statRow('Intelligence', '${hero.baseInt} (+${hero.intGain})'),
+                      _statRow('Dégâts', '${hero.baseAttackMin} - ${hero.baseAttackMax}'),
+                      _statRow('Armure', '${hero.baseArmor}'),
+                      _statRow('Portée', '${hero.attackRange}'),
+                      _statRow('Vitesse', '${hero.moveSpeed}'),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                const Text(
+                  "Matchups",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.45),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: _buildMatchupsList(),
+                ),
+
+                const SizedBox(height: 24),
+              ],
             ),
-            SizedBox(height: 20),
-            Text('Attribut principal: ${widget.hero.primaryAttr}'),
-            Text('Type d\'attaque: ${widget.hero.attackType}'),
-            Text('Rôles: ${widget.hero.roles.join(', ')}'),
-            SizedBox(height: 20),
-            if (_heroStats != null) ...[
-              Text(
-                'Statistiques:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Winrate: ${(_heroStats!['win_rate'] * 100).toStringAsFixed(2)}%',
-              ),
-              Text(
-                'Popularité: ${_heroStats!['pick_rate'].toStringAsFixed(2)}%',
-              ),
-            ] else
-              CircularProgressIndicator(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
