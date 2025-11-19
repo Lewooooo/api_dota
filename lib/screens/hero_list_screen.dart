@@ -12,7 +12,7 @@ class HeroListScreen extends StatefulWidget {
 
 class _HeroListScreenState extends State<HeroListScreen> {
   late Future<List<DotaHero>> _futureHeroes;
-  String selectedRole = 'All';
+  Set<String> selectedRoles = {}; // Multi-select roles
   String searchQuery = '';
 
   @override
@@ -41,30 +41,35 @@ class _HeroListScreenState extends State<HeroListScreen> {
 
           final heroes = snapshot.data ?? [];
 
-          /// --- Liste des rôles ---
-          final roles = ['All'];
-          for (final h in heroes) {
-            for (final r in h.roles) {
-              if (!roles.contains(r)) roles.add(r);
-            }
+          // --- Liste unique des rôles ---
+          final allRoles = <String>{};
+          for (var h in heroes) {
+            allRoles.addAll(h.roles);
           }
+          final rolesList = allRoles.toList()..sort();
 
-          /// --- Filtre rôle + recherche ---
+          // --- Filtrage multi-roles + recherche ---
           List<DotaHero> filtered = heroes.where((h) {
+            final matchSearch = h.localizedName.toLowerCase().contains(
+              searchQuery.toLowerCase(),
+            );
+
+            // Tous les rôles sélectionnés doivent être présents dans h.roles
             final matchRole =
-                selectedRole == 'All' || h.roles.contains(selectedRole);
-            final matchSearch = h.localizedName
-                .toLowerCase()
-                .contains(searchQuery.toLowerCase());
-            return matchRole && matchSearch;
+                selectedRoles.isEmpty ||
+                selectedRoles.every((r) => h.roles.contains(r));
+
+            return matchSearch && matchRole;
           }).toList();
 
           return Column(
             children: [
-              /// --- Recherche ---
+              /// --- Barre de recherche ---
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: TextField(
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -81,28 +86,52 @@ class _HeroListScreenState extends State<HeroListScreen> {
                 ),
               ),
 
-              /// --- Filtre rôle ---
-              Padding(
+              /// --- Tags multi-sélection des rôles ---
+              Container(
+                height: 40,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: DropdownButton<String>(
-                  value: selectedRole,
-                  dropdownColor: const Color(0xff252B30),
-                  isExpanded: true,
-                  items: roles
-                      .map((r) => DropdownMenuItem(
-                            value: r,
-                            child: Text(r,
-                                style: const TextStyle(color: Colors.white)),
-                          ))
-                      .toList(),
-                  onChanged: (val) =>
-                      setState(() => selectedRole = val ?? 'All'),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: rolesList.map((role) {
+                    final selected = selectedRoles.contains(role);
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (selected) {
+                            selectedRoles.remove(role);
+                          } else {
+                            selectedRoles.add(role);
+                          }
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? Colors.tealAccent.withOpacity(0.9)
+                              : Colors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          role.toUpperCase(),
+                          style: TextStyle(
+                            color: selected ? Colors.black : Colors.white70,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
 
               const SizedBox(height: 10),
 
-              /// --- Grid moderne ---
+              /// --- Grid des héros ---
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -110,11 +139,11 @@ class _HeroListScreenState extends State<HeroListScreen> {
                     itemCount: filtered.length,
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 140,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.8,
-                    ),
+                          maxCrossAxisExtent: 140,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 0.8,
+                        ),
                     itemBuilder: (context, index) {
                       final hero = filtered[index];
 
@@ -123,8 +152,8 @@ class _HeroListScreenState extends State<HeroListScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>
-                                    HeroDetailScreen(hero: hero)),
+                              builder: (_) => HeroDetailScreen(hero: hero),
+                            ),
                           );
                         },
                         child: Container(
@@ -133,7 +162,7 @@ class _HeroListScreenState extends State<HeroListScreen> {
                             gradient: LinearGradient(
                               colors: [
                                 Colors.white.withOpacity(0.05),
-                                Colors.white.withOpacity(0.15)
+                                Colors.white.withOpacity(0.15),
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -143,7 +172,7 @@ class _HeroListScreenState extends State<HeroListScreen> {
                                 color: Colors.black.withOpacity(0.3),
                                 blurRadius: 4,
                                 offset: const Offset(2, 2),
-                              )
+                              ),
                             ],
                           ),
                           child: Column(
@@ -164,31 +193,39 @@ class _HeroListScreenState extends State<HeroListScreen> {
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 style: const TextStyle(
-                                    color: Colors.white, fontSize: 12),
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Wrap(
                                 alignment: WrapAlignment.center,
                                 children: hero.roles
-                                    .map((r) => Container(
-                                          margin:
-                                              const EdgeInsets.only(right: 4),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: Colors.tealAccent
-                                                .withOpacity(0.7),
-                                            borderRadius:
-                                                BorderRadius.circular(6),
+                                    .map(
+                                      (r) => Container(
+                                        margin: const EdgeInsets.only(right: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.tealAccent.withOpacity(
+                                            0.7,
                                           ),
-                                          child: Text(
-                                            r.toUpperCase(),
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 8,
-                                                fontWeight: FontWeight.bold),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
                                           ),
-                                        ))
+                                        ),
+                                        child: Text(
+                                          r.toUpperCase(),
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    )
                                     .toList(),
                               ),
                             ],
