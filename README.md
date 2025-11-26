@@ -9,11 +9,12 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 ---
 
 # 🖼️ **Aperçu de l'application**
-<p align="center">
+<div align="center">
 <img width="539" height="955" alt="heroes_list" src="https://github.com/user-attachments/assets/869bc720-11b7-4315-b95d-4eb85935121c" />
 <img width="536" height="944" alt="favoris" src="https://github.com/user-attachments/assets/02bfa903-be6a-4e4b-a015-2b96277b9d1c" />
-![Uploading hero_detail.png…]()
-</p>
+<img width="642" height="944" alt="hero_detail" src="https://github.com/user-attachments/assets/0d89539c-6e6b-48ea-8a8a-9ad87a828a6a" />
+
+</div>
 
 ---
 
