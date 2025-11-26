@@ -5,7 +5,15 @@ import '../services/api_service.dart';
 
 class HeroDetailScreen extends StatefulWidget {
   final DotaHero hero;
-  const HeroDetailScreen({Key? key, required this.hero}) : super(key: key);
+  final bool isFavorite;
+  final VoidCallback onFavoriteToggle;
+
+  const HeroDetailScreen({
+    Key? key,
+    required this.hero,
+    required this.isFavorite,
+    required this.onFavoriteToggle,
+  }) : super(key: key);
 
   @override
   _HeroDetailScreenState createState() => _HeroDetailScreenState();
@@ -16,10 +24,12 @@ class _HeroDetailScreenState extends State<HeroDetailScreen> {
   Map<int, DotaHero>? _heroMap;
   bool _loading = true;
   String? _error;
+  late bool _isFavorite;
 
   @override
   void initState() {
     super.initState();
+    _isFavorite = widget.isFavorite;
     _loadMatchups();
   }
 
@@ -123,7 +133,7 @@ class _HeroDetailScreenState extends State<HeroDetailScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: Image.network(
-                opponent.fullIconUrl, // ⭐ UTILISATION DIRECTE DES URL OpenDota
+                opponent.fullIconUrl,
                 width: 44,
                 height: 44,
                 fit: BoxFit.cover,
@@ -173,12 +183,33 @@ class _HeroDetailScreenState extends State<HeroDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xff111417),
         title: Text(hero.localizedName),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: _isFavorite ? Colors.red : Colors.white,
+            ),
+            onPressed: () {
+              setState(() {
+                _isFavorite = !_isFavorite;
+              });
+              widget.onFavoriteToggle();
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: [
           // ⭐ Background image
           Positioned.fill(
-            child: Image.network(hero.fullImgUrl, fit: BoxFit.cover),
+            child: Image.network(
+              hero.fullImgUrl, 
+              fit: BoxFit.cover,
+              // Fallback en cas d'erreur de chargement
+              errorBuilder: (context, error, stackTrace) {
+                return Container(color: Colors.grey[800]);
+              },
+            ),
           ),
 
           // ⭐ Semi-clear filter
@@ -192,6 +223,7 @@ class _HeroDetailScreenState extends State<HeroDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Rôles
                 Wrap(
                   children: hero.roles.map((r) => _roleTag(r)).toList(),
                 ),
@@ -230,6 +262,7 @@ class _HeroDetailScreenState extends State<HeroDetailScreen> {
 
                 const SizedBox(height: 24),
 
+                // MATCHUPS
                 const Text(
                   "Matchups",
                   style: TextStyle(
