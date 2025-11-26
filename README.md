@@ -10,13 +10,25 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 
 # 🖼️ **Aperçu de l'application**
 
-<p align="center">
-  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/heroes_list.png" width="280" />
-  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/favoris.png" width="280" />
-  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/hero_detail.png" width="280" />
-</p>
+<div align="center" style="display:flex; justify-content:center; gap:25px;">
 
-![Texte alternatif](assets/screenshots/heroes_list.png.png)
+  <div>
+    <img width="250" alt="heroes_list" src="https://github.com/user-attachments/assets/869bc720-11b7-4315-b95d-4eb85935121c" />
+    <p><strong>Liste des héros</strong></p>
+  </div>
+
+  <div>
+    <img width="250" alt="favoris" src="https://github.com/user-attachments/assets/02bfa903-be6a-4e4b-a015-2b96277b9d1c" />
+    <p><strong>Écran des favoris</strong></p>
+  </div>
+
+  <div>
+    <img width="250" alt="hero_detail" src="https://github.com/user-attachments/assets/0d89539c-6e6b-48ea-8a8a-9ad87a828a6a" />
+    <p><strong>Détails d’un héro</strong></p>
+  </div>
+
+</div>
+
 
 ---
 
@@ -65,7 +77,7 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 ### 🚀 Installation du projet
 
 ```bash
-git clone <votre-repo>
+git clone https://github.com/Lewooooo/api_dota
 cd dota_heroes
 flutter pub get
 ```
