@@ -1,4 +1,4 @@
-# 🎮 **Dota 2 Heroes App**
+<img width="1915" height="998" alt="Copie d&#39;écran_20251126_143445" src="https://github.com/user-attachments/assets/1e39319f-4932-4c1d-bd9d-b19a06e08da7" /># 🎮 **Dota 2 Heroes App**
 
 Une application **Flutter** moderne permettant d’explorer les héros de *Dota 2* avec leurs statistiques complètes, leurs rôles et leurs matchups — alimentée par l’API **OpenDota**.
 
@@ -9,12 +9,6 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 ---
 
 # 🖼️ **Aperçu de l'application**
-
-<p align="center">
-  <img src="[https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/heroes_list.png](https://github.com/Lewooooo/api_dota/blob/main/assets/screenshots/favoris.png?raw=true)" width="280" />
-  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/favoris.png" width="280" />
-  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/hero_detail.png" width="280" />
-</p>
 
 ![Uploading Copie d'écran_20251126_143445.png…]()
 
