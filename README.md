@@ -11,10 +11,11 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 # 🖼️ **Aperçu de l'application**
 
 <p align="center">
-  ![alt text](image.png)
-  ![alt text](image-1.png)
-  ![alt text](image-2.png)
+  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/heroes_list.png" width="280" />
+  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/favoris.png" width="280" />
+  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/hero_detail.png" width="280" />
 </p>
+
 
 ---
 
@@ -108,8 +109,4 @@ Ce projet est sous licence **MIT** — libre d’utilisation et de modification.
 
 ---
 
-Si tu veux, je peux aussi :
-✅ Générer des *mockups 3D* de tes screens
-✅ Te proposer une bannière GitHub stylée
-✅ Créer un *logo d’application* compatible stores
 
