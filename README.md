@@ -96,10 +96,4 @@ N’hésite pas à ouvrir une issue pour proposer des idées ou signaler un bug.
 
 Ce projet est sous licence **MIT** — libre d’utilisation et de modification.
 
----
 
-Si tu veux, je peux aussi :
-✅ Ajouter des badges (Flutter, MIT, Version…)
-✅ Faire un README avec images/screenshots
-✅ Générer un logo pour ton app
-Tu veux une version encore plus visuelle ? 👀
