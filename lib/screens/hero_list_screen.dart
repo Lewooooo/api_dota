@@ -190,6 +190,7 @@ class _HeroListScreenState extends State<HeroListScreen> with SingleTickerProvid
                   child: Stack(
                     children: [
                       Container(
+                        constraints: BoxConstraints.expand(width: 200,height: 200),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           gradient: LinearGradient(

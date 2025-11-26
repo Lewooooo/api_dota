@@ -8,6 +8,16 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 
 ---
 
+# 🖼️ **Aperçu de l'application**
+
+<p align="center">
+  ![alt text](image.png)
+  ![alt text](image-1.png)
+  ![alt text](image-2.png)
+</p>
+
+---
+
 ## ✨ **Fonctionnalités**
 
 ### 🧙 Liste complète des héros
@@ -66,13 +76,13 @@ flutter run
 
 ---
 
-## 🗂️ **Organisation du projet** *(optionnelle mais utile)*
+## 🗂️ **Organisation du projet**
 
 ```
 lib/
  ├── models/        # Modèles OpenDota (Hero, Stats, Matchups…)
- ├── screens/      # Requêtes API OpenDota
- ├── services/         # UI principale (home, détails, favoris…)
+ ├── screens/       # Pages de l'application
+ ├── services/      # Appels API OpenDota
  └── main.dart
 ```
 
@@ -96,4 +106,10 @@ N’hésite pas à ouvrir une issue pour proposer des idées ou signaler un bug.
 
 Ce projet est sous licence **MIT** — libre d’utilisation et de modification.
 
+---
+
+Si tu veux, je peux aussi :
+✅ Générer des *mockups 3D* de tes screens
+✅ Te proposer une bannière GitHub stylée
+✅ Créer un *logo d’application* compatible stores
 
