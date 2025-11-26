@@ -77,7 +77,7 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 ### 🚀 Installation du projet
 
 ```bash
-git clone <votre-repo>
+git clone https://github.com/Lewooooo/api_dota
 cd dota_heroes
 flutter pub get
 ```
