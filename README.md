@@ -11,7 +11,7 @@ Une application **Flutter** moderne permettant d’explorer les héros de *Dota 
 # 🖼️ **Aperçu de l'application**
 
 <p align="center">
-  <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/heroes_list.png" width="280" />
+  <img src="[https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/heroes_list.png](https://github.com/Lewooooo/api_dota/blob/main/assets/screenshots/favoris.png?raw=true)" width="280" />
   <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/favoris.png" width="280" />
   <img src="https://github.com/Lewooooo/api_dota/tree/main/assets/screenshots/hero_detail.png" width="280" />
 </p>
