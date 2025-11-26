@@ -71,10 +71,9 @@ flutter run
 ```
 lib/
  ├── models/        # Modèles OpenDota (Hero, Stats, Matchups…)
- ├── services/      # Requêtes API OpenDota
- ├── pages/         # UI principale (home, détails, favoris…)
- ├── widgets/       # Composants réutilisables
- └── utils/         # Constantes, helpers, thèmes…
+ ├── screens/      # Requêtes API OpenDota
+ ├── services/         # UI principale (home, détails, favoris…)
+ └── main.dart
 ```
 
 ---
